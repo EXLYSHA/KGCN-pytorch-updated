@@ -15,18 +15,24 @@ from data_loader import DataLoader
 
 
 class KGCNDataset(torch.utils.data.Dataset):
-    """
-    Dataset class: dataset object from the given dataframe
-    """
     def __init__(self, df):
         self.df = df
     def __len__(self):
         return len(self.df)
     def __getitem__(self, idx):
-        user_id = np.array(self.df.iloc[idx]['userID'])
-        item_id = np.array(self.df.iloc[idx]['itemID'])
-        label = np.array(self.df.iloc[idx]['label'], dtype=np.float32)
-        return user_id, item_id, label
+        raw_user = self.df.iloc[idx]['userID']
+        raw_item = self.df.iloc[idx]['itemID']
+        
+        # 统一转换为标量
+        user_id = np.array(raw_user).item()
+        item_id = np.array(raw_item).item()
+        label = np.array(self.df.iloc[idx]['label'], dtype=np.float32).item()
+        
+        return (
+            np.array(user_id, dtype=np.int64),
+            np.array(item_id, dtype=np.int64), 
+            np.array(label, dtype=np.float32)
+        )
 
 def prepare_arguments(arguments=None):
     """
